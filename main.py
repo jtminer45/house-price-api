@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pickle
 import numpy as np
@@ -12,6 +13,13 @@ with open("scaler.pkl", "rb") as f:
 
 # Define the API
 app = FastAPI(title="House Price Predictor API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Define input schema
 class HouseFeatures(BaseModel):

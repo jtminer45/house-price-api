@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>House Price Predictor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1B3A6B 0%, #2E74B5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      color: #1B3A6B;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: #888;
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 2px solid #e8eef7;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #1B3A6B;
+      transition: border 0.2s;
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: #2E74B5;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #1B3A6B, #2E74B5);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.03em;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(46,116,181,0.4);
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .result {
+      margin-top: 1.8rem;
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #e8eef7, #f5f8ff);
+      border-radius: 14px;
+      display: none;
+    }
+
+    .result.show { display: block; }
+
+    .result .label {
+      font-size: 0.85rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .result .price {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #1B3A6B;
+    }
+
+    .result .sub {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 0.3rem;
+    }
+
+    .error {
+      margin-top: 1rem;
+      color: #e74c3c;
+      text-align: center;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .error.show { display: block; }
+
+    .loading {
+      display: none;
+      margin-top: 1rem;
+      text-align: center;
+      color: #2E74B5;
+      font-size: 0.95rem;
+    }
+
+    .loading.show { display: block; }
+
+    @media (max-width: 500px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="emoji">🏠</div>
+      <h1>House Price Predictor</h1>
+      <p>Enter property details to get an instant price estimate</p>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Bedrooms</label>
+        <input type="number" id="bedrooms" value="3" step="1"/>
+      </div>
+      <div class="field">
+        <label>Bathrooms</label>
+        <input type="number" id="bathrooms" value="2" step="0.25"/>
+      </div>
+      <div class="field">
+        <label>Sqft Living</label>
+        <input type="number" id="sqft_living" value="1800"/>
+      </div>
+      <div class="field">
+        <label>Sqft Lot</label>
+        <input type="number" id="sqft_lot" value="5000"/>
+      </div>
+      <div class="field">
+        <label>Floors</label>
+        <input type="number" id="floors" value="1" step="0.5"/>
+      </div>
+      <div class="field">
+        <label>Grade (1–13)</label>
+        <input type="number" id="grade" value="7" min="1" max="13"/>
+      </div>
+      <div class="field">
+        <label>Condition (1–5)</label>
+        <input type="number" id="condition" value="3" min="1" max="5"/>
+      </div>
+      <div class="field">
+        <label>View (0–4)</label>
+        <input type="number" id="view" value="0" min="0" max="4"/>
+      </div>
+      <div class="field">
+        <label>Waterfront (0/1)</label>
+        <input type="number" id="waterfront" value="0" min="0" max="1"/>
+      </div>
+      <div class="field">
+        <label>Year Built</label>
+        <input type="number" id="yr_built" value="1990"/>
+      </div>
+      <div class="field">
+        <label>Sqft Above</label>
+        <input type="number" id="sqft_above" value="1800"/>
+      </div>
+      <div class="field">
+        <label>Sqft Basement</label>
+        <input type="number" id="sqft_basement" value="0"/>
+      </div>
+      <div class="field">
+        <label>Latitude</label>
+        <input type="number" id="lat" value="47.5" step="0.0001"/>
+      </div>
+      <div class="field">
+        <label>Longitude</label>
+        <input type="number" id="long" value="-122.2" step="0.0001"/>
+      </div>
+      <div class="field">
+        <label>Sqft Living15</label>
+        <input type="number" id="sqft_living15" value="1800"/>
+      </div>
+      <div class="field">
+        <label>Sqft Lot15</label>
+        <input type="number" id="sqft_lot15" value="5000"/>
+      </div>
+      <div class="field">
+        <label>House Age (years)</label>
+        <input type="number" id="house_age" value="35"/>
+      </div>
+      <div class="field">
+        <label>Was Renovated (0/1)</label>
+        <input type="number" id="was_renovated" value="0" min="0" max="1"/>
+      </div>
+      <div class="field">
+        <label>Price per Sqft</label>
+        <input type="number" id="price_per_sqft" value="200"/>
+      </div>
+      <div class="field">
+        <label>Total Rooms</label>
+        <input type="number" id="total_rooms" value="5"/>
+      </div>
+    </div>
+
+    <button class="btn" onclick="predict()">Predict Price</button>
+
+    <div class="loading" id="loading">⏳ Calculating...</div>
+    <div class="error" id="error">❌ Could not connect to API. Make sure it's running on port 8000.</div>
+
+    <div class="result" id="result">
+      <div class="label">Estimated Property Value</div>
+      <div class="price" id="price-display">$0</div>
+      <div class="sub">Powered by Random Forest · R² 0.9987</div>
+    </div>
+  </div>
+
+  <script>
+    async function predict() {
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+      const error = document.getElementById('error');
+
+      loading.classList.add('show');
+      result.classList.remove('show');
+      error.classList.remove('show');
+
+      const payload = {
+        bedrooms: parseFloat(document.getElementById('bedrooms').value),
+        bathrooms: parseFloat(document.getElementById('bathrooms').value),
+        sqft_living: parseFloat(document.getElementById('sqft_living').value),
+        sqft_lot: parseFloat(document.getElementById('sqft_lot').value),
+        floors: parseFloat(document.getElementById('floors').value),
+        waterfront: parseFloat(document.getElementById('waterfront').value),
+        view: parseFloat(document.getElementById('view').value),
+        condition: parseFloat(document.getElementById('condition').value),
+        grade: parseFloat(document.getElementById('grade').value),
+        sqft_above: parseFloat(document.getElementById('sqft_above').value),
+        sqft_basement: parseFloat(document.getElementById('sqft_basement').value),
+        yr_built: parseFloat(document.getElementById('yr_built').value),
+        lat: parseFloat(document.getElementById('lat').value),
+        long: parseFloat(document.getElementById('long').value),
+        sqft_living15: parseFloat(document.getElementById('sqft_living15').value),
+        sqft_lot15: parseFloat(document.getElementById('sqft_lot15').value),
+        house_age: parseFloat(document.getElementById('house_age').value),
+        was_renovated: parseFloat(document.getElementById('was_renovated').value),
+        price_per_sqft: parseFloat(document.getElementById('price_per_sqft').value),
+        total_rooms: parseFloat(document.getElementById('total_rooms').value),
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        loading.classList.remove('show');
+        document.getElementById('price-display').textContent =
+          '$' + data.predicted_price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        result.classList.add('show');
+      } catch (e) {
+        loading.classList.remove('show');
+        error.classList.add('show');
+      }
+    }
+  </script>
+</body>
+</html>
